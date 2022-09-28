@@ -24,7 +24,7 @@ def push_bugs_to_kanban(bugs):
         elif "tracked" in bug['tags']:
             status = stati['tracked']
 
-        #taigaproject.add_user_story("%s - %s"%(bug['id'],bug['title']),description=bug['description'],status=status)
+        taigaproject.add_user_story("%s - %s"%(bug['id'],bug['title']),description=bug['description'],status=status)
         print("added %d" % bug['id'])
 
 base_temp_path = "/tmp/sfos-forum-bug-moderation-tool"
