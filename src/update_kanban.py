@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Iterator
 
 from taiga import TaigaAPI
-from taiga.models import UserStory
+from taiga.models import UserStory, UserStories
 
 
 def get_sfos_topic_id_from_taiga_story_subject(subject):
@@ -25,7 +25,8 @@ def push_bugs_to_kanban(bugs):
 
     taigaproject = api.projects.get_by_slug(os.getenv('KANBAN_PROJECT'))
 
-    status_to_taigaid = {x.slug:x.id for x in taigaproject.list_user_story_statuses()}
+    status_to_taigaid: dict[str,int] = {x.slug:x.id for x in taigaproject.list_user_story_statuses()}
+    story_attribute_to_id : dict[str,str] = {x.name:x.id for x in taigaproject.list_user_story_attributes()}
     # taigaid_to_status = {v:k for k,v in status_to_taigaid.items()}
     # defaultprio = taigaproject.priorities.get(name='High').id
     # defaulttype = taigaproject.issue_types.get(name='Bug').id
@@ -43,15 +44,22 @@ def push_bugs_to_kanban(bugs):
         if int(sfos_id) in stories_by_sfos_id:
             kanban_found:ExistingBugOnKanban = stories_by_sfos_id[sfos_id]
             print("%d already on kanban as %s" % (sfos_id, kanban_found))
+
             # always set them to fixed or tracked if they are not
             if status != status_to_taigaid['new'] and status != kanban_found.status:
                 print("status updated from %s to %s" %(kanban_found.status,status))
                 kanban_found.taiga_story.status = status
                 kanban_found.taiga_story.update()
         else:
-            taigaproject.add_user_story("%s - %s" % (sfos_id, bug['title']), description=bug['description'], status=status)
+            story: UserStory = taigaproject.add_user_story("%s - %s" % (sfos_id, bug['title']), description=bug['description'])
+            set_story_attributes(sfos_id, story,story_attribute_to_id)
             print("added %d" % sfos_id)
 
+
+def set_story_attributes(sfos_id, story,story_attribute_to_id):
+    story.set_attribute(story_attribute_to_id["sfos_forum_id"], sfos_id)
+    story.set_attribute(story_attribute_to_id["sfos_forum_link"], "https://forum.sailfishos.org/t/%d" % sfos_id)
+    story.update()
 
 
 @dataclass
