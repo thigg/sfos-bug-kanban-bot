@@ -11,8 +11,9 @@ parser.add_argument('filename', type=argparse.FileType('r'), nargs='?')
 args = parser.parse_args()
 if args.filename:
     topic_ids = [int(x) for x in args.filename.readlines()]
-else: #otherwise get latest page from forum
-    topic_ids = [int(x['id']) for x in requests.get("https://forum.sailfishos.org/c/bug-reports/13.json").json()['topic_list']['topics']]
+else:  # otherwise get latest page from forum
+    topic_ids = [int(x['id']) for x in
+                 requests.get("https://forum.sailfishos.org/c/bug-reports/13.json").json()['topic_list']['topics']]
 
 print("got %d ids" % len(topic_ids))
 
@@ -40,15 +41,17 @@ def get_cached_closure(url_template, base_temp_path, filenamepattern):
 
 
 get_topic = get_cached_closure("https://forum.sailfishos.org/t/%d.json", base_temp_path, "%d.json")
-get_likes_of_post = get_cached_closure("https://forum.sailfishos.org/post_action_users.json?id=%d&post_action_type_id=2",
-                                       base_temp_path, "%d-likes.json")
+get_likes_of_post = get_cached_closure(
+    "https://forum.sailfishos.org/post_action_users.json?id=%d&post_action_type_id=2",
+    base_temp_path, "%d-likes.json")
 
 for topic_id in topic_ids:
     topic_temp_path = Path(base_temp_path, "%d.json" % topic_id)
     topic = get_topic(topic_id)
     first_post_id = int(topic['post_stream']["posts"][0]['id'])
-    first_post_likes = get_likes_of_post(first_post_id)
-    likes = [user["id"] for user in first_post_likes["post_action_users"]]
+    # first_post_likes = get_likes_of_post(first_post_id)
+    # likes = [user["id"] for user in first_post_likes["post_action_users"]]
+    likes = ["disabled"]
 
     summaries.append({"title": topic['title'],
                       "id": topic['id'],
@@ -64,7 +67,3 @@ for topic_id in topic_ids:
 summaries_ordered = sorted(summaries, key=lambda x: x['last_posted_at'])
 with open("%s/summary.json" % base_temp_path, 'w') as f:
     json.dump(summaries_ordered, f)
-
-
-
-

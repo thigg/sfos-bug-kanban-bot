@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Iterator
 
 from taiga import TaigaAPI
-from taiga.models import UserStory, UserStories
+from taiga.models import UserStory
 
 
 def get_sfos_topic_id_from_taiga_story_subject(subject):
@@ -27,10 +27,7 @@ def push_bugs_to_kanban(bugs):
 
     status_to_taigaid: dict[str,int] = {x.slug:x.id for x in taigaproject.list_user_story_statuses()}
     story_attribute_to_id : dict[str,str] = {x.name:x.id for x in taigaproject.list_user_story_attributes()}
-    # taigaid_to_status = {v:k for k,v in status_to_taigaid.items()}
-    # defaultprio = taigaproject.priorities.get(name='High').id
-    # defaulttype = taigaproject.issue_types.get(name='Bug').id
-    # defaultseverity = taigaproject.severities.get(name='Minor').id
+
     stories_by_sfos_id = {x.sfos_forum_id: x for x in get_existing_bugs_on_board(taigaproject)}
     print("found %d stories on the board" % len(stories_by_sfos_id))
     for bug in bugs:
