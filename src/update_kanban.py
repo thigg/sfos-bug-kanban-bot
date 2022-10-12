@@ -36,6 +36,8 @@ def push_bugs_to_kanban(bugs):
             status = status_to_taigaid['fixed']
         elif "tracked" in bug['tags']:
             status = status_to_taigaid['tracked']
+        elif bug["closed"]:
+            status = status_to_taigaid['closed']
 
         sfos_id = int(bug['id'])
         if int(sfos_id) in stories_by_sfos_id:

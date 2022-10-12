@@ -60,6 +60,7 @@ for topic_id in topic_ids:
                       "tags": topic['tags'],
                       "url": "https://forum.sailfishos.org/t/%d" % topic_id,
                       "created_at": topic['created_at'],
+                      "closed": topic['closed'],
                       "likes": likes,
                       "description": topic['post_stream']['posts'][0]['cooked'][:5000]
                       })
