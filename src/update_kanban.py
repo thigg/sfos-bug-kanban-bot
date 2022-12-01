@@ -9,7 +9,7 @@ from taiga.models import UserStory
 
 
 def get_sfos_topic_id_from_taiga_story_subject(subject):
-    match = re.match("(\\d+) - .*", subject)
+    match = re.match("(\\d+)\\s*-.*", subject)
     if match:
         return int(match.group(1))
     else:
