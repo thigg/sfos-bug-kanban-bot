@@ -10,6 +10,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(22,
                          get_sfos_topic_id_from_taiga_story_subject("22 - About the Bug Reports category"))
         self.assertEqual(None,get_sfos_topic_id_from_taiga_story_subject("teststory"))
+        self.assertEqual(22,get_sfos_topic_id_from_taiga_story_subject("22"))
+        self.assertEqual(1,get_sfos_topic_id_from_taiga_story_subject("1"))
 
 
 if __name__ == '__main__':
