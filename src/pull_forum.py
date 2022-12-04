@@ -8,12 +8,13 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('filename', type=argparse.FileType('r'), nargs='?')
+parser.add_argument('--numPages', type=int, nargs='?', default=1)
 args = parser.parse_args()
 if args.filename:
     topic_ids = [int(x) for x in args.filename.readlines()]
 else:  # otherwise get latest page from forum
-    topic_ids = [int(x['id']) for x in
-                 requests.get("https://forum.sailfishos.org/c/bug-reports/13.json").json()['topic_list']['topics']]
+    topic_ids = [int(x['id']) for page in range(1,args.numPages+1) for x in
+                 requests.get(f"https://forum.sailfishos.org/c/bug-reports/13.json?page={page}").json()['topic_list']['topics'] ]
 
 print("got %d ids" % len(topic_ids))
 

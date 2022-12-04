@@ -13,6 +13,7 @@ def get_sfos_topic_id_from_taiga_story_subject(subject):
     if match:
         return int(match.group(1))
     else:
+        print(f"Could not match a topic id in title {subject}")
         return None
 
 def push_bugs_to_kanban(bugs):
