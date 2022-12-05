@@ -37,6 +37,8 @@ def push_bugs_to_kanban(bugs):
             status = status_to_taigaid['fixed']
         elif "tracked" in bug['tags']:
             status = status_to_taigaid['tracked']
+        elif "pending" in bug['tags']:
+            status = status_to_taigaid['pending']
         elif bug["closed"]:
             status = status_to_taigaid['closed']
 
