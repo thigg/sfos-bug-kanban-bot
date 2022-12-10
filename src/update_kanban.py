@@ -27,6 +27,7 @@ def push_bugs_to_kanban(bugs):
     taigaproject = api.projects.get_by_slug(os.getenv('KANBAN_PROJECT'))
 
     status_to_taigaid: dict[str,int] = {x.slug:x.id for x in taigaproject.list_user_story_statuses()}
+    print("statusids: ", status_to_taigaid)
     story_attribute_to_id : dict[str,str] = {x.name:x.id for x in taigaproject.list_user_story_attributes()}
 
     stories_by_sfos_id = {x.sfos_forum_id: x for x in get_existing_bugs_on_board(taigaproject)}
@@ -37,6 +38,8 @@ def push_bugs_to_kanban(bugs):
             status = status_to_taigaid['fixed']
         elif "tracked" in bug['tags']:
             status = status_to_taigaid['tracked']
+        elif "pending" in bug['tags']:
+            status = status_to_taigaid['pending']
         elif bug["closed"]:
             status = status_to_taigaid['closed']
 
@@ -52,14 +55,15 @@ def push_bugs_to_kanban(bugs):
                 kanban_found.taiga_story.update()
         else:
             story: UserStory = taigaproject.add_user_story("%s - %s" % (sfos_id, bug['title']), description=bug['description'])
+            story.status = status
             set_story_attributes(sfos_id, story,story_attribute_to_id)
-            print("added %d" % sfos_id)
+            print("added %d onto status %d" % (sfos_id, status))
+            story.update()
 
 
 def set_story_attributes(sfos_id, story,story_attribute_to_id):
     story.set_attribute(story_attribute_to_id["sfos_forum_id"], sfos_id)
     story.set_attribute(story_attribute_to_id["sfos_forum_link"], "https://forum.sailfishos.org/t/%d" % sfos_id)
-    story.update()
 
 
 @dataclass
