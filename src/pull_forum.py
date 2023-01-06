@@ -98,7 +98,7 @@ if __name__ == '__main__':
         topic_ids = [int(x) for x in args.filename.readlines()]
     else:  # otherwise get the latest page from forum
         with ThreadPoolExecutor() as executor:
-            topic_ids = list(itertools.chain(*executor.map(get_topic_ids_from_category_page,range(1, args.numPages + 1))))
+            topic_ids = list(itertools.chain(*executor.map(get_topic_ids_from_category_page,range(0, args.numPages))))
 
     print("got %d ids" % len(topic_ids))
     ForumPuller().write_summary(topic_ids)
